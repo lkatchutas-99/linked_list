@@ -23,55 +23,63 @@ class LinkedList
   end
 
   def head
-    @list[0] unless @list.empty?
+    @list.empty? ? 'There are no nodes' : @list[0].value
   end
 
   def tail
-    @list[size - 1] unless @list.empty?
+    @list.empty? ? 'There are no nodes' : @list[size - 1].value
   end
 
   def at(index)
-    @list[index] unless @list.empty?
+    @list[index] || 'Invalid Index'
   end
 
   def pop
-    return if @list.empty?
+    return 'There are no nodes' if @list.empty?
 
     @list[size - 2].next_node = nil
     @list.pop
   end
 
   def contains?(value)
-    @list.value.include?(value)
+    return 'There are no nodes' if @list.empty?
+
+    @list.select { |node| node.value == value }
   end
 
   def find(value)
-    @list.find_index do |node|
-      node.value == value
-    end
+    @list.find_index { |node| node.value == value } || 'Node not found'
   end
 
   def insert_at(value, index)
+    return 'Index is too high or too low' unless index >= 0 && index <= size
+
     node = Node.new(value)
-    node.next_node = @list[index + 1]
-    @list[index] = value
     @list.insert(index, node)
+    @list[index].next_node = @list[index + 1] ? @list[index + 1].value : nil
+    @list[index - 1].next_node = value unless index.zero?
   end
 
   def remove_at(index)
-    return if @list.empty?
+    return 'Node not found at index' if @list.empty? || index > size
 
-    unless @list.length <= 1
+    unless index.zero?
       @list[index - 1].next_node = @list[index + 1] ? @list[index + 1].value : nil
     end
+
     @list.delete_at(index)
   end
 
   def to_s
-    @list.each do |node|
-      print "( #{node.value} ) -> "
+    if @list.empty?
+      print '( nil )'
+    else
+      print "( #{@list[0].value} )"
+      @list.each do |node|
+        print " -> ( #{node.next_node.nil? ? 'nil' : node.next_node} )"
+      end
     end
-    puts 'nil'
+    puts ''
   end
 end
 
